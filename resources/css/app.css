@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.emoji-bubble-container {
+    position: absolute;
+    bottom: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.emoji-bubble {
+    position: absolute;
+    font-size: 1.5rem;
+    animation: floatUp 3s ease-out forwards;
+    opacity: 0;
+}
+
+@keyframes floatUp {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: translateY(-50px) scale(1.2);
+        opacity: 0.7;
+    }
+    100% {
+        transform: translateY(-100px) scale(0.8);
+        opacity: 0;
+    }
+}
+
+.emoji-bubble.happy {
+    color: yellow;
+    left: -50px;
+}
+
+.emoji-bubble.sad {
+    color: #ff4d4d;
+    left: 50px;
+}
+
+.text-sm {
+    padding-left: 8px; /* Space between columns */
+    padding-right: 8px;
+}
+
+/* Optional: Make sure the buttons are nicely aligned */
+td {
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
