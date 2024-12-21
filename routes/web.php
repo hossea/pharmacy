@@ -6,7 +6,7 @@ use App\Livewire\MedicineManagement;
 use App\Livewire\SalesManagement;
 use App\Livewire\Categories;
 
-
+// Public Routes
 Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
@@ -17,17 +17,15 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified', 'role-manager:admin'])->name('dashboard');
 
 // Admin Routes
-Route::get('/medicine-management', MedicineManagement::class)
-    ->middleware(['auth', 'role-manager:admin'])
-    ->name('medicine.management.list');
-Route::get('/categories', Categories::class)
-    ->middleware(['auth', 'role-manager:admin'])
-    ->name('category.list');
+Route::middleware(['auth', 'role-manager:admin'])->group(function () {
+    Route::get('/medicine-management', MedicineManagement::class)->name('medicine.management.list');
+    Route::get('/categories', Categories::class)->name('category.list');
+});
 
 // Sales Routes for Cashier/Seller
-Route::get('/sales-management', SalesManagement::class)
-    ->middleware(['auth', 'role-manager:cashier'])
-    ->name('sales-management');
+Route::middleware(['auth', 'role-manager:cashier'])->group(function () {
+    Route::get('/sales-management', SalesManagement::class)->name('sales.management');
+});
 
 // Profile Routes
 Route::middleware('auth')->group(function () {
@@ -36,7 +34,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Authentication Routes
 require __DIR__.'/auth.php';
+
 
 
 
