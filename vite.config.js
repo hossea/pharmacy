@@ -8,4 +8,7 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    build: {
+        outDir: 'dist' // Ensure the output directory is named 'dist'
+    }
 });

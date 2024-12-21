@@ -21,6 +21,23 @@
 
     <!-- Vite Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <meta name="theme-color" content="#000000">
+
+    <!-- Register Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/js/serviceworker.js')
+                .then(registration => {
+                    console.log('Service Worker registered with scope:', registration.scope);
+                })
+                .catch(error => {
+                    console.error('Service Worker registration failed:', error);
+                });
+        }
+    </script>
 </head>
 <body class="font-sans antialiased">
     <div class="min-h-screen bg-gray-100">

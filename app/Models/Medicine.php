@@ -40,4 +40,9 @@ class Medicine extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function debtor()
+    {
+        return $this->hasMany(Debtor::class);
+    }
+
 }

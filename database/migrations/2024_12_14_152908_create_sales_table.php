@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('quantity_sold');
             $table->decimal('price_per_unit', 10, 2)->default(0);
             $table->decimal('total_price', 10, 2);
-            $table->enum('payment_method', ['Mpesa', 'Cash', 'Debt', 'Discount']);
+            $table->enum('payment_method', ['Mpesa', 'Cash', 'Debt', 'Bank Transfer']);
             $table->decimal('discount', 10, 2)->nullable();
             $table->string('sold_by');
             $table->timestamps();

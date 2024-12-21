@@ -28,6 +28,12 @@
         >
             View Sales
         </button>
+        <button
+    wire:click="switchView('debtors')"
+    class="px-4 py-2 rounded-lg text-white {{ $view === 'debtors' ? 'bg-blue-500' : 'bg-gray-300' }} hover:bg-blue-600 focus:outline-none">
+    View Debtors
+</button>
+
     </div>
 
    <!-- Conditional Content Rendering -->
@@ -61,7 +67,7 @@
             <!-- Quantity -->
             <div class="mb-4">
                 <label for="quantity" class="block text-sm font-medium text-gray-700 mb-2">
-                    <i class="fas fa-sort-numeric-up text-yellow-500"></i> Quantity
+                    <i class="fas fa-sort-numeric-up text-yellow-500"></i> Quantity(No. of Tablets/Bottles)
                 </label>
                 <input
                     type="number"
@@ -132,6 +138,7 @@
     class="w-full px-4 py-2 border rounded-lg text-gray-700 focus:ring focus:ring-blue-300 focus:border-blue-500">
     <option value="">Select Payment Method</option>
     <option value="Mpesa">Mpesa</option>
+    <option value="Bank Transfer">Bank Transfer</option>
     <option value="Cash">Cash</option>
     <option value="Debt">Debt</option>
 
@@ -163,7 +170,7 @@
                     <input
                         type="text"
                         id="debtor_name"
-                        wire:model="debtor_name"
+                        wire:model="debtorName"
                         class="w-full px-4 py-2 border rounded-lg text-gray-700 focus:ring focus:ring-blue-300 focus:border-blue-500"
                         placeholder="Enter debtor's name">
                     @error('debtor_name') <span class="text-red-500">{{ $message }}</span> @enderror
@@ -176,12 +183,14 @@
                     <input
                         type="text"
                         id="debtor_phone"
-                        wire:model="debtor_phone"
+                        wire:model="debtorPhone"
                         class="w-full px-4 py-2 border rounded-lg text-gray-700 focus:ring focus:ring-blue-300 focus:border-blue-500"
                         placeholder="Enter debtor's phone">
                     @error('debtor_phone') <span class="text-red-500">{{ $message }}</span> @enderror
                 </div>
             @endif
+
+
 
             <!-- Submit Button -->
             <button
@@ -193,7 +202,7 @@
 
     @elseif ($view === 'sales')
         <!-- Sales Listing -->
-        <div class="bg-white p-6 rounded-lg shadow-md max-w-4xl mx-auto">
+        <div class="bg-white p-6 rounded-lg shadow-md max-w-7xl mx-auto">
             <h2 class="text-2xl font-semibold text-gray-700 mb-4 flex items-center">
                 <i class="fas fa-list text-blue-500 mr-2"></i> Sales Listing
             </h2>
@@ -202,9 +211,11 @@
                     <thead class="bg-blue-100 text-gray-700">
                         <tr>
                             <th class="border-b border-gray-300 px-4 py-2 text-left font-medium">Medicine</th>
-                            <th class="border-b border-gray-300 px-4 py-2 text-left font-medium">Quantity</th>
-                            <th class="border-b border-gray-300 px-4 py-2 text-left font-medium">Price Per Unit</th>
+                            <th class="border-b border-gray-300 px-4 py-2 text-left font-medium">Quantity(No. of Tablets/Bottle)</th>
+                            <th class="border-b border-gray-300 px-4 py-2 text-left font-medium">Price Per Unit/Tablet/Bottle</th>
                             <th class="border-b border-gray-300 px-4 py-2 text-left font-medium">Total Price</th>
+                            <th class="border-b border-gray-300 px-4 py-2 text-left font-medium">Discount</th>
+                            <th class="border-b border-gray-300 px-4 py-2 text-left font-medium">Payment Method</th>
                             <th class="border-b border-gray-300 px-4 py-2 text-left font-medium">Sold By</th>
                             <th class="border-b border-gray-300 px-4 py-2 text-left font-medium">Actions</th>
                         </tr>
@@ -216,6 +227,8 @@
                                 <td class="border-b border-gray-300 px-4 py-2">{{ $sale->quantity_sold }}</td>
                                 <td class="border-b border-gray-300 px-4 py-2">Ksh. {{ $sale->price_per_unit }}</td>
                                 <td class="border-b border-gray-300 px-4 py-2">Ksh. {{ $sale->total_price }}</td>
+                                <td class="border-b border-gray-300 px-4 py-2">Ksh. {{ $sale->discount }}</td>
+                                <td class="border-b border-gray-300 px-4 py-2">{{ $sale->payment_method }}</td>
                                 <td class="border-b border-gray-300 px-4 py-2">{{ $sale->sold_by }}</td>
                                 <td class="border-b border-gray-300 px-4 py-2">
                                     <button
@@ -301,6 +314,59 @@
                 <i class="fas fa-save"></i> Save Changes
             </button>
         </form>
+
+        @elseif ($view === 'debtors')
+        <!-- Debtors View -->
+        <div class="bg-white p-6 rounded-lg shadow-md max-w-4xl mx-auto">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4 flex items-center">
+                <i class="fas fa-user text-gray-500 mr-2"></i> Debtors
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="w-full table-auto border-collapse border border-gray-200 rounded-lg shadow-sm">
+                    <thead class="bg-red-100 text-gray-700">
+                        <tr>
+                            <th class="border-b border-gray-300 px-4 py-2 text-left font-medium">Debtor Name</th>
+                            <th class="border-b border-gray-300 px-4 py-2 text-left font-medium">Phone</th>
+                            <th class="border-b border-gray-300 px-4 py-2 text-left font-medium">Medicine</th>
+                            <th class="border-b border-gray-300 px-4 py-2 text-left font-medium">Amount Owed</th>
+                            <th class="border-b border-gray-300 px-4 py-2 text-left font-medium">Pay Status</th>
+                            <th class="border-b border-gray-300 px-4 py-2 text-left font-medium">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($debtors as $debtor)
+                            <tr class="hover:bg-gray-50">
+                                <td class="border-b border-gray-300 px-4 py-2">{{ $debtor->name }}</td>
+                                <td class="border-b border-gray-300 px-4 py-2">{{ $debtor->phone }}</td>
+                                <td class="border-b border-gray-300 px-4 py-2">{{ $debtor->medicine->name }}</td>
+                                <td class="border-b border-gray-300 px-4 py-2">
+                                    <span class="font-bold {{ $debtor->status === 'Complete' ? 'text-green-500' : 'text-red-500' }}">
+                                        Ksh. {{ $debtor->amount_owed }}
+                                    </span>
+                                </td>
+                                <td class="border-b border-gray-300 px-4 py-2">
+                                    <span class="px-2 py-1 text-xs font-semibold rounded
+                                        {{ $debtor->status === 'Complete' ? 'bg-green-100 text-green-500' : 'bg-red-100 text-red-500' }}">
+                                        {{ $debtor->status }}
+                                    </span>
+                                </td>
+                                <td class="border-b border-gray-300 px-4 py-2">
+                                    <button
+                                        wire:click="toggleDebtorStatus({{ $debtor->id }})"
+                                        class="px-4 py-2 rounded text-white transition
+                                        {{ $debtor->status === 'Complete' ? 'bg-red-700 hover:bg-red-700' : 'bg-green-700 hover:bg-green-700' }}">
+                                        {{ $debtor->status === 'Complete' ? 'Mark as Incomplete' : 'Mark as Paid' }}
+                                    </button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            @if ($debtors->isEmpty())
+                <p class="text-gray-500 mt-4 text-center">No debtors have been recorded yet.</p>
+            @endif
+        </div>
     @endif
 </div>
 

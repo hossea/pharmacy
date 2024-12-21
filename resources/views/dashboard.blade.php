@@ -32,48 +32,8 @@
                 </ul>
             </div>
 
-            <!-- Main Content -->
-            <div class="w-3/4 ml-4">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <!-- Total Sales Cards -->
-                    <div class="bg-white shadow-md rounded-lg p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 flex items-center">
-                            <i class="fas fa-cash-register mr-2 text-green-500"></i> Total Sales
-                        </h3>
-                        <p>Daily: <span class="text-green-500 font-bold">Ksh 1,200</span></p>
-                        <p>Weekly: <span class="text-green-500 font-bold">Ksh 8,400</span></p>
-                        <p>Monthly: <span class="text-green-500 font-bold">Ksh 36,000</span></p>
-                    </div>
 
-                    <!-- Total Price for Products Sold -->
-                    <div class="bg-white shadow-md rounded-lg p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 flex items-center">
-                            <i class="fas fa-shopping-bag mr-2 text-blue-500"></i> Total Products Sold
-                        </h3>
-                        <p>Daily: <span class="text-blue-500 font-bold">Ksh 800</span></p>
-                        <p>Weekly: <span class="text-blue-500 font-bold">Ksh 5,600</span></p>
-                        <p>Monthly: <span class="text-blue-500 font-bold">Ksh 24,000</span></p>
-                    </div>
 
-                    <!-- Debts -->
-                    <div class="bg-white shadow-md rounded-lg p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 flex items-center">
-                            <i class="fas fa-hand-holding-usd mr-2 text-red-500"></i> Debts
-                        </h3>
-                        <p>Total: <span class="text-red-500 font-bold">Ksh 2,000</span></p>
-                    </div>
-
-                    <!-- Discounts in Cash -->
-                    <div class="bg-white shadow-md rounded-lg p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 flex items-center">
-                            <i class="fas fa-percentage mr-2 text-purple-500"></i> Discounts
-                        </h3>
-                        <p>Daily: <span class="text-purple-500 font-bold">Ksh 50</span></p>
-                        <p>Weekly: <span class="text-purple-500 font-bold">Ksh 350</span></p>
-                        <p>Monthly: <span class="text-purple-500 font-bold">Ksh 1,500</span></p>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </x-app-layout>

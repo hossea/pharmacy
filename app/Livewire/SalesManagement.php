@@ -24,11 +24,13 @@ class SalesManagement extends Component
     public $price_per_unit;
     public $saleId;
     public $total_price = 0;
+    public $debtors;
 
     public function mount()
     {
         $this->loadData();
         $this->total_price = 0;
+        $this->debtors = Debtor::with('sale.medicine')->get();
     }
 
     public function loadData()
@@ -51,7 +53,8 @@ class SalesManagement extends Component
             'selectedMedicineId' => 'required|exists:medicines,id',
             'quantity' => 'required|integer|min:1',
             'soldBy' => 'required|string|max:255',
-            'paymentMethod' => 'required|in:Mpesa,Cash,Debt,Discount',
+            'paymentMethod' => 'required|in:Mpesa,Cash,Debt,Bank Transfer',
+            'discount' => 'nullable|numeric|min:0',
         ]);
 
         $medicine = Medicine::find($this->selectedMedicineId);
@@ -67,9 +70,19 @@ class SalesManagement extends Component
         }
 
         $this->pricePerUnit = $medicine->price;
-        $this->totalPrice = $this->quantity * $this->pricePerUnit;
-        $this->totalPrice = $this->quantity * $this->pricePerUnit - $this->discount;
+        $discount = $this->discount ?? 0;
 
+        if ($discount > ($this->pricePerUnit * $this->quantity)) {
+            session()->flash('error', 'Discount cannot exceed the total price.');
+            return;
+        }
+
+        $this->totalPrice = ($this->pricePerUnit * $this->quantity) - $discount;
+
+        if ($this->totalPrice < 0) {
+            session()->flash('error', 'Total price cannot be negative.');
+            return;
+        }
 
         $medicine->decrement('quantity', $this->quantity);
 
@@ -79,10 +92,10 @@ class SalesManagement extends Component
             'price_per_unit' => $this->pricePerUnit,
             'total_price' => $this->totalPrice,
             'payment_method' => $this->paymentMethod,
-            'discount' => $this->discount,
+            'discount' => $discount,
             'sold_by' => $this->soldBy ?? auth()->user()->name,
         ]);
-        
+
         if (!$sale) {
             session()->flash('error', 'Sale record creation failed.');
             return;
@@ -107,6 +120,36 @@ class SalesManagement extends Component
         session()->flash('message', 'Sale completed successfully.');
     }
 
+    public function toggleDebtorStatus($debtorId)
+    {
+        $debtor = Debtor::find($debtorId);
+
+        if (!$debtor) {
+            session()->flash('error', 'Debtor not found.');
+            return;
+        }
+
+        $debtor->status = $debtor->status === 'Complete' ? 'Incomplete' : 'Complete';
+        $debtor->save();
+
+        session()->flash('message', 'Debtor status updated successfully.');
+    }
+
+
+    public function storeDebtor(Request $request)
+    {
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:255',
+            'amount_owed' => 'required|numeric',
+            'sale_id' => 'required|exists:sales,id',
+        ]);
+
+        $debtor = Debtor::create($validatedData);
+
+        return response()->json(['message' => 'Debtor saved successfully!', 'debtor' => $debtor]);
+    }
+
     public function editSale($saleId)
     {
         $sale = Sale::find($saleId);
@@ -119,10 +162,7 @@ class SalesManagement extends Component
             $this->totalPrice = $sale->total_price;
             $this->view = 'edit-sale';
         }
-
-
     }
-
     public function updateSale()
     {
         $this->validate([
@@ -218,4 +258,5 @@ class SalesManagement extends Component
     {
         return view('livewire.sales-management')->layout('layouts.app');
     }
+
 }

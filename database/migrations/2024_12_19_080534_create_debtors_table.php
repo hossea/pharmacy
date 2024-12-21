@@ -18,6 +18,7 @@ return new class extends Migration
             $table->decimal('amount_owed', 10, 2);
             $table->unsignedBigInteger('sale_id'); // Removed 'unique()'
             $table->foreign('sale_id')->references('id')->on('sales')->onDelete('cascade');
+            $table->string('status')->default('Incomplete');
             $table->timestamps();
         });
     }

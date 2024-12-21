@@ -18,7 +18,6 @@
 </div>
 @endif
 
-
     <!-- Delete Confirmation Modal -->
     <div
     x-data="{ open: @entangle('showDeleteModal') }"
@@ -107,10 +106,10 @@
         <thead>
             <tr class="bg-gray-100 font-serif font-bold border-b">
                 <th class="py-3 px-4 text-left text-sm font-medium text-gray-700">ID</th>
-                <th class="py-3 px-4 text-left text-sm font-medium text-gray-700">Name</th>
-                <th class="py-3 px-4 text-left text-sm font-medium text-gray-700">Company</th>
-                <th class="py-3 px-4 text-left text-sm font-medium text-gray-700">Quantity</th>
-                <th class="py-3 px-4 text-left text-sm font-medium text-gray-700">Price</th>
+                <th class="py-3 px-4 text-left text-sm font-medium text-gray-700">MedName</th>
+                <th class="py-3 px-4 text-left text-sm font-medium text-gray-700">Manufacturer/Company</th>
+                <th class="py-3 px-4 text-left text-sm font-medium text-gray-700">Quantity(No. of Tablets/Bottle)</th>
+                <th class="py-3 px-4 text-left text-sm font-medium text-gray-700">Price(Per Unit)</th>
                 <th class="py-3 px-4 text-left text-sm font-medium text-gray-700">Category</th>
                 <th class="py-3 px-4 text-left text-sm font-medium text-gray-700">Expiry Date</th>
                 <th class="py-3 px-4 text-left text-sm font-medium text-gray-700">Actions</th>
@@ -215,7 +214,7 @@
             <!-- Other Fields -->
             <!-- Medicine Name -->
             <div>
-                <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+                <label for="name" class="block text-sm font-medium text-gray-700">MedName</label>
                 <input type="text" id="name" wire:model="name"
                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
                 @error('name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
@@ -223,7 +222,7 @@
 
             <!-- Company -->
             <div>
-                <label for="company" class="block text-sm font-medium text-gray-700">Company</label>
+                <label for="company" class="block text-sm font-medium text-gray-700">Company/Manufacturer</label>
                 <input type="text" id="company" wire:model="company"
                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
                 @error('company') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
@@ -231,7 +230,7 @@
 
             <!-- Quantity -->
             <div>
-                <label for="quantity" class="block text-sm font-medium text-gray-700">Quantity</label>
+                <label for="quantity" class="block text-sm font-medium text-gray-700">Quantity(No. of Tablets/Bottles)</label>
                 <input type="number" id="quantity" wire:model="quantity"
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700 {{ $editMode ? 'bg-gray-200 cursor-not-allowed' : '' }}"
                 {{ $editMode ? 'disabled' : '' }}
@@ -242,7 +241,7 @@
 
             <!-- Price -->
             <div>
-                <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
+                <label for="price" class="block text-sm font-medium text-gray-700">Price(Per Tablet/Bottle)</label>
                 <input type="text" id="price" wire:model="price"
                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
                 @error('price') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
