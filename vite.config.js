@@ -9,6 +9,7 @@ export default defineConfig({
         }),
     ],
     build: {
-        outDir: 'dist' // Ensure the output directory is named 'dist'
+        outDir: 'public/dist',
     }
 });
+
