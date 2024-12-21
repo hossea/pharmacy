@@ -46,5 +46,5 @@ Route::get('/categories', Categories::class)->name('category.list');
 Route::get('/sales-management', SalesManagement::class)->name('sales-management');
 Route::get('/medicine-management', MedicineManagement::class)->name('medicine.management.list');
 
-//Route::get('/dashboard', SalesManagement::class)->name('dashboard');
+
 
