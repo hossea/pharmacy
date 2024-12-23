@@ -31,20 +31,27 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'email', 'lowercase', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
+
+        // Determine the role: first user becomes admin, others are cashiers
+        $role = User::count() === 0 ? User::ROLE_ADMIN : User::ROLE_CASHIER;
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => $role,
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        // Redirect based on the assigned role
+        return $role === User::ROLE_ADMIN
+            ? redirect()->route('dashboard')
+            : redirect()->route('sales-management');
     }
 }

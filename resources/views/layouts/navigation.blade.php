@@ -16,6 +16,19 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+
+                    <!-- Added Links -->
+                    <x-nav-link :href="route('sales-management')" :active="request()->routeIs('sales-management')">
+                        {{ __('Sales Management') }}
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('medicine-management')" :active="request()->routeIs('medicine-management')">
+                        {{ __('Medicine Management') }}
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('categories')" :active="request()->routeIs('categories')">
+                        {{ __('Categories') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -76,43 +89,18 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
-        </div>
 
-        <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-gray-200">
-            <div class="px-4">
-                @if(Auth::check())
-                    <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
-                    <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
-                @else
-                    <div class="text-sm text-gray-500">
-                        Visit <a href="{{ route('welcome') }}" class="text-blue-500 hover:underline">Welcome Page</a> to Login.
-                    </div>
-                @endif
-            </div>
+            <x-responsive-nav-link :href="route('sales-management')" :active="request()->routeIs('sales-management')">
+                {{ __('Sales Management') }}
+            </x-responsive-nav-link>
 
-            <div class="mt-3 space-y-1">
-                @if(Auth::check())
-                    <!-- Profile -->
-                    <x-responsive-nav-link :href="route('profile.edit')">
-                        {{ __('Profile') }}
-                    </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('medicine-management')" :active="request()->routeIs('medicine-management')">
+                {{ __('Medicine Management') }}
+            </x-responsive-nav-link>
 
-                    <!-- Authentication -->
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <x-responsive-nav-link :href="route('logout')"
-                                onclick="event.preventDefault();
-                                            this.closest('form').submit();">
-                            {{ __('Log Out') }}
-                        </x-responsive-nav-link>
-                    </form>
-                @else
-                    <div class="text-sm text-gray-500">
-                        Visit <a href="{{ route('welcome') }}" class="text-blue-500 hover:underline">Welcome Page</a> to Login.
-                    </div>
-                @endif
-            </div>
+            <x-responsive-nav-link :href="route('categories')" :active="request()->routeIs('categories')">
+                {{ __('Categories') }}
+            </x-responsive-nav-link>
         </div>
     </div>
 </nav>

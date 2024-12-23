@@ -5,9 +5,11 @@ use Livewire\Component;
 use App\Models\Medicine;
 use App\Models\Category;
 use App\Models\MedicineStock;
+use Livewire\WithPagination; // Add this
 
 class MedicineManagement extends Component
 {
+    use WithPagination; // Add this
     public $currentPage = 'list';
     public $editMode = false;
 
@@ -21,12 +23,65 @@ class MedicineManagement extends Component
     public $categories;
     public $category_id;
     public $expiry_date;
+    public $stocks = [];
+    public $filterMonth;
+    public $filterDate;
 
     public function mount()
     {
         $this->categories = Category::all();
         $this->medicines = Medicine::with('category')->get();
+        $this->loadStocks();
     }
+
+    public function updatedFilterMonth()
+    {
+        $this->resetPage();
+        $this->loadStocks();
+    }
+    public function updatedStartDate()
+    {
+        $this->resetPage();
+        $this->loadStocks();
+    }
+
+    public function resetFilter()
+    {
+        $this->filterMonth = null;
+        $this->filterDate = null;
+        $this->stocks = MedicineStock::with('medicine')->latest()->get();
+        $this->loadStocks();
+    }
+
+    public function loadStocks()
+    {
+        $this->stocks = MedicineStock::with('medicine')
+        ->when($this->filterMonth, function ($query) {
+                $query->whereMonth('created_at', $this->filterMonth);
+            })
+            ->when($this->filterDate, function ($query) {
+                $query->whereDate('created_at', $this->filterDate);
+            })
+            ->latest()
+            ->get();
+    }
+    public function getStocksProperty()
+    {
+        $query = MedicineStock::query()->with('medicine');
+
+        if ($this->filterMonth) {
+            $query->whereMonth('created_at', $this->filterMonth);
+        }
+
+        if ($this->filterDate) {
+            $query->whereDate('created_at', $this->filterDate);
+        }
+
+        return $query->paginate(10);
+    }
+
+
+
     public function resetInputs()
     {
         $this->editMode = false;
@@ -150,6 +205,12 @@ class MedicineManagement extends Component
         $this->resetInputs();
     }
 
+    public function switchToStocksAdded()
+    {
+        $this->currentPage = 'stocksAdded';
+        $this->stocks = MedicineStock::with('medicine')->latest()->get();
+    }
+
     public function promptDelete($id, $name)
     {
         $this->deleteMedicineId = $id;
@@ -177,7 +238,17 @@ class MedicineManagement extends Component
     {
         return redirect()->route('sales-management'); // Adjust 'sales.index' to match your route name
     }
+    public function deleteMedicine($medicineId)
+    {
+        $medicine = Medicine::findOrFail($medicineId);
+        $medicine->delete();
 
+        $this->medicines = $this->medicines->filter(function ($medicine) use ($medicineId) {
+            return $medicine->id !== $medicineId;
+        });
+
+        session()->flash('message', 'Medicine deleted successfully.');
+    }
 
     public function render()
     {

@@ -18,49 +18,6 @@
 </div>
 @endif
 
-    <!-- Delete Confirmation Modal -->
-    <div
-    x-data="{ open: @entangle('showDeleteModal') }"
-    x-show="open"
-    class="fixed inset-0 flex items-center justify-center z-50"
-    style="display: none;"
->
-    <!-- Overlay -->
-    <div class="absolute inset-0 bg-black bg-opacity-50" @click="open = false"></div>
-
-    <!-- Modal -->
-    <div
-        class="bg-white rounded-lg shadow-lg p-6 z-10 max-w-sm border-l-4 border-red-500"
-        x-transition:enter="ease-out duration-300"
-        x-transition:enter-start="opacity-0 scale-90"
-        x-transition:enter-end="opacity-100 scale-100"
-        x-transition:leave="ease-in duration-300"
-        x-transition:leave-start="opacity-100 scale-100"
-        x-transition:leave-end="opacity-0 scale-90"
-    >
-        <h2 class="text-lg font-bold text-red-800">Confirm Deletion</h2>
-        <p class="text-sm text-gray-800 mt-2">
-            Are you sure you want to delete <span class="font-semibold text-red-700">{{ $deleteMedicineName }}</span>?
-        </p>
-        <div class="mt-4 flex justify-end gap-2">
-            <button
-                @click="open = false"
-                wire:click="cancelDelete"
-                class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
-            >
-                Cancel
-            </button>
-            <button
-                wire:click="confirmDelete"
-                @click="open = false"
-                class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-            >
-                Confirm
-            </button>
-        </div>
-    </div>
-</div>
-
     <!-- Page Header and Navigation -->
 <div class="mb-4 flex justify-between items-center">
     <h1 class="text-xl font-semibold text-gray-700">
@@ -75,6 +32,12 @@
             >
                 <i class="fas fa-plus"></i> New Medicine
             </button>
+            <button
+                wire:click="switchPage('stockList')"
+                class="px-4 py-2 bg-green-500 text-white rounded-md shadow-sm hover:bg-green-600 focus:outline-none"
+            >
+                Stocks Added
+            </button>
         @elseif ($currentPage === 'form' || $currentPage === 'edit')
             <button
                 wire:click="switchPage('list')"
@@ -82,6 +45,7 @@
             >
                 <i class="fas fa-arrow-left"></i> Back to List
             </button>
+
         @endif
 
         <!-- Navigate to Sales -->
@@ -117,7 +81,7 @@
         </thead>
         <tbody>
             @foreach ($medicines as $medicine)
-                <tr class="border-b hover:bg-gray-50">
+                <tr wire:key="medicine-{{ $medicine->id }}" class="border-b hover:bg-gray-50">
                     <td class="py-2 px-4 text-sm text-gray-700">{{ $medicine->medicine_id }}</td>
                     <td class="py-2 px-4 text-sm text-gray-700">{{ $medicine->name }}</td>
                     <td class="py-2 px-4 text-sm text-gray-700">{{ $medicine->company }}</td>
@@ -136,10 +100,12 @@
                             Edit
                         </button>
                         <button
-                            wire:click="promptDelete({{ $medicine->id }}, '{{ $medicine->name }}')"
+                            wire:click="deleteMedicine({{ $medicine->id }})"
                             class="bg-white text-red-500 px-2 py-1 rounded-md hover:text-white hover:bg-red-800">
                             Delete
                         </button>
+
+
                         <button
                             wire:click="switchToAddStock({{ $medicine->id }})"
                             class="bg-white text-green-700 px-2 font-serif py-1 rounded-md hover:text-white hover:bg-blue-600">
@@ -186,6 +152,71 @@
         </div>
     </form>
 </div>
+
+
+
+@elseif ($currentPage === 'stockList')
+        <!-- Stock List -->
+        <div class="bg-white shadow-md rounded-md p-6">
+            <h3 class="text-lg font-semibold text-gray-700 mb-4 flex items-center">
+                <i class="fas fa-box-open text-green-500 mr-2"></i> Stock Additions
+            </h3>
+
+            <!-- Date Filter -->
+            <div class="flex flex-wrap gap-4 items-center mb-4">
+                <select
+                    wire:model="filterMonth"
+                    class="block w-48 rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500 text-gray-700"
+                >
+                    <option value="">All Months</option>
+                    @for ($i = 1; $i <= 12; $i++)
+                        <option value="{{ $i }}">{{ \Carbon\Carbon::create()->month($i)->format('F') }}</option>
+                    @endfor
+                </select>
+
+                <input
+                    type="date"
+                    wire:model="filterDate"
+                    class="block w-48 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700"
+                >
+
+                <button
+                    wire:click="resetFilter"
+                    class="px-4 py-2 bg-gray-500 text-white rounded-md shadow-sm hover:bg-gray-600 focus:outline-none"
+                >
+                    Reset Filter
+                </button>
+            </div>
+
+            <!-- Stock Table -->
+            <table class="min-w-full bg-white border">
+                <thead>
+                    <tr class="bg-gray-100 font-serif font-bold border-b">
+                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-700">Stock ID</th>
+                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-700">Medicine Name</th>
+                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-700">Quantity Added</th>
+                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-700">Date Added</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($stocks as $stock)
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="py-2 px-4 text-sm text-gray-700">{{ $stock->id }}</td>
+                            <td class="py-2 px-4 text-sm text-gray-700">{{ $stock->medicine->name }}</td>
+                            <td class="py-2 px-4 text-sm text-gray-700">{{ $stock->quantity }}</td>
+                            <td class="py-2 px-4 text-sm text-gray-700">{{ $stock->created_at->format('Y-m-d') }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" class="py-4 text-center text-gray-500">No stock additions found.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        
+        </div>
+
 
 @elseif ($currentPage === 'form' || $currentPage === 'edit')
 <!-- Add/Edit Medicine Form -->

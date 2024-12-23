@@ -132,6 +132,7 @@ class SalesManagement extends Component
         $debtor->status = $debtor->status === 'Complete' ? 'Incomplete' : 'Complete';
         $debtor->save();
 
+        $this->debtors = Debtor::with('sale.medicine')->get();
         session()->flash('message', 'Debtor status updated successfully.');
     }
 
@@ -252,6 +253,51 @@ class SalesManagement extends Component
         $medicine = Medicine::find($medicineId);
         $this->price_per_unit = $medicine ? $medicine->price : 0;
         $this->updateTotalPrice();
+    }
+
+    public function calculateSalesSummary()
+    {
+        $sales = Sale::all();
+
+        $totals = [
+            'cash' => 0,
+            'mpesa' => 0,
+            'bank_transfer' => 0,
+            'debt' => 0,
+            'total_discount' => 0,
+            'overall_total' => 0,
+        ];
+
+        foreach ($sales as $sale) {
+            $totals['total_discount'] += $sale->discount ?? 0;
+            $totals['overall_total'] += $sale->total_price;
+
+            switch ($sale->payment_method) {
+                case 'Cash':
+                    $totals['cash'] += $sale->total_price;
+                    break;
+                case 'Mpesa':
+                    $totals['mpesa'] += $sale->total_price;
+                    break;
+                case 'Bank Transfer':
+                    $totals['bank_transfer'] += $sale->total_price;
+                    break;
+                case 'Debt':
+                    $totals['debt'] += $sale->total_price;
+                    break;
+            }
+        }
+
+        return $totals;
+    }
+
+    public function deleteSale($salesId)
+    {
+        $sale = Sale::findOrFail($salesId);
+        $sale->delete();
+        $this->sales = Sale::all();
+
+        session()->flash('message', 'Sale deleted successfully.');
     }
 
     public function render()

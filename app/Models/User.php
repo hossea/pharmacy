@@ -2,48 +2,48 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
         'email',
-        'role',
+        'role', // Allow role assignment during registration
         'password',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
+
+    // Role constants for easier reference
+    public const ROLE_ADMIN = 0;
+    public const ROLE_CASHIER = 1;
+
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
+     * Check if the user is an admin.
      */
-    protected function casts(): array
+    public function isAdmin(): bool
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->role === self::ROLE_ADMIN;
+    }
+
+    /**
+     * Check if the user is a cashier.
+     */
+    public function isCashier(): bool
+    {
+        return $this->role === self::ROLE_CASHIER;
     }
 }
