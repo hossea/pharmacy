@@ -26,6 +26,4 @@ class Debtor extends Model
     {
         return $this->sale->medicine();
     }
-
-
 }

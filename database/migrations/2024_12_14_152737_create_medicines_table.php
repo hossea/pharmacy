@@ -21,10 +21,10 @@ return new class extends Migration
             $table->decimal('price', 10, 2);
             $table->unsignedBigInteger('category_id')->nullable();
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
+            $table->foreignId('classification_id')->nullable()->constrained()->onDelete('cascade');
             $table->date('expiry_date');
             $table->timestamps();
         });
-
     }
 
     /**

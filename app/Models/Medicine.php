@@ -19,8 +19,9 @@ class Medicine extends Model
         'name',
         'company',
         'price',
-        'quantity', // Fixed consistency (use lowercase)
+        'quantity', 
         'category_id',
+        'classification_id',
         'expiry_date',
     ];
 
@@ -31,7 +32,6 @@ class Medicine extends Model
     {
         return $this->hasMany(Sale::class);
     }
-
     /**
      * Relationship with the Sale model
      */
@@ -39,7 +39,16 @@ class Medicine extends Model
     {
         return $this->belongsTo(Category::class);
     }
-
+    /**
+     * Relationship with the Classification model
+     */
+    public function classification()
+    {
+        return $this->belongsTo(Classification::class);
+    }
+    /**
+     * Relationship with the Debtor model
+     */
     public function debtor()
     {
         return $this->hasMany(Debtor::class);

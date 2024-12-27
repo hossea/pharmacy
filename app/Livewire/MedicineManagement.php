@@ -5,6 +5,7 @@ use Livewire\Component;
 use App\Models\Medicine;
 use App\Models\Category;
 use App\Models\MedicineStock;
+use App\Models\Classification;
 use Livewire\WithPagination; // Add this
 
 class MedicineManagement extends Component
@@ -14,6 +15,9 @@ class MedicineManagement extends Component
     public $editMode = false;
 
     public $medicine_id, $name, $company, $quantity, $price;
+    public $classification_id;
+    public $classifications;
+    public $classification;
     public $medicines;
 
     public $showDeleteModal = false;
@@ -22,18 +26,25 @@ class MedicineManagement extends Component
     public $currentMedicineId, $currentMedicineName, $newStock;
     public $categories;
     public $category_id;
+    public $expiry_month;
     public $expiry_date;
     public $stocks = [];
     public $filterMonth;
     public $filterDate;
+    public $search = '';
 
     public function mount()
     {
         $this->categories = Category::all();
-        $this->medicines = Medicine::with('category')->get();
+        $this->medicines = Medicine::with('category', 'classification')->get();
+        $medicines = Medicine::with('classification')->paginate(10);
         $this->loadStocks();
+        $this->classifications = Classification::all();
     }
-
+    public function updatedSearch()
+    {
+        $this->medicines = $this->performSearch();
+    }
     public function updatedFilterMonth()
     {
         $this->resetPage();
@@ -44,13 +55,28 @@ class MedicineManagement extends Component
         $this->resetPage();
         $this->loadStocks();
     }
-
     public function resetFilter()
     {
         $this->filterMonth = null;
         $this->filterDate = null;
+        $this->search = '';
         $this->stocks = MedicineStock::with('medicine')->latest()->get();
         $this->loadStocks();
+    }
+    public function performSearch()
+    {
+        return Medicine::query()
+            ->with('category', 'classification')
+            ->when($this->search, function ($query) {
+                $query->where('name', 'like', '%' . $this->search . '%')
+                    ->orWhereHas('classification', function ($q) {
+                        $q->where('name', 'like', '%' . $this->search . '%');
+                    })
+                    ->orWhereHas('category', function ($q) {
+                        $q->where('name', 'like', '%' . $this->search . '%');
+                    });
+            })
+            ->get();
     }
 
     public function loadStocks()
@@ -79,16 +105,12 @@ class MedicineManagement extends Component
 
         return $query->paginate(10);
     }
-
-
-
     public function resetInputs()
     {
         $this->editMode = false;
         $this->medicine_id = $this->name = $this->company = $this->quantity = $this->price = null;
         $this->currentMedicineId = $this->currentMedicineName = $this->newStock = null;
     }
-
     public function switchPage($page)
     {
         $this->currentPage = $page;
@@ -99,6 +121,8 @@ class MedicineManagement extends Component
     }
     public function saveMedicine()
     {
+        $classificationsAvailable = Classification::count() > 0;
+
         $this->validate([
             'medicine_id' => 'required|unique:medicines,medicine_id',
             'name' => 'required',
@@ -106,8 +130,17 @@ class MedicineManagement extends Component
             'quantity' => 'required|numeric|min:1',
             'price' => 'required|numeric',
             'category_id' => 'required|exists:categories,id',
+            'classification_id' => 'nullable|exists:classifications,id',
             'expiry_date' => 'required|date|after:today',
         ]);
+
+        if ($classificationsAvailable) {
+            $rules['classification_id'] = 'required|exists:classifications,id';
+        } else {
+            $rules['classification_id'] = 'nullable';
+        }
+
+        $this->validate($rules);
 
         $medicine = Medicine::create([
             'medicine_id' => $this->medicine_id,
@@ -116,6 +149,7 @@ class MedicineManagement extends Component
             'quantity' => $this->quantity,
             'price' => $this->price,
             'category_id' => $this->category_id,
+            'classification_id' => $this->classification_id,
             'expiry_date' => $this->expiry_date
         ]);
 
@@ -123,7 +157,6 @@ class MedicineManagement extends Component
         $this->switchPage('list');
         $this->medicines = Medicine::all();
     }
-
     public function editMedicine($id)
     {
         $medicine = Medicine::findOrFail($id);
@@ -133,11 +166,12 @@ class MedicineManagement extends Component
         $this->company = $medicine->company;
         $this->quantity = $medicine->quantity;
         $this->price = $medicine->price;
+        $this->classification = $medicine->classification;
+        $this->category_id = $medicine->category_id;
 
         $this->editMode = true;
         $this->switchPage('form');
     }
-
     public function updateMedicine()
     {
         $this->validate([
@@ -145,9 +179,9 @@ class MedicineManagement extends Component
             'company' => 'required',
             'price' => 'required|numeric',
             'category_id' => 'required|exists:categories,id',
+            'classification' => 'required',
             'expiry_date' => 'required|date',
         ]);
-
         $medicine = Medicine::where('medicine_id', $this->medicine_id)->firstOrFail();
 
         $medicine->update([
@@ -155,9 +189,9 @@ class MedicineManagement extends Component
             'company' => $this->company,
             'price' => $this->price,
             'category_id' => $this->category_id,
+            'classification' => $this->classification,
             'expiry_date' => $this->expiry_date,
         ]);
-
         session()->flash('message', 'Medicine updated successfully!');
         $this->switchPage('list');
         $this->medicines = Medicine::all();
@@ -204,13 +238,11 @@ class MedicineManagement extends Component
         $this->currentPage = 'list';
         $this->resetInputs();
     }
-
     public function switchToStocksAdded()
     {
         $this->currentPage = 'stocksAdded';
         $this->stocks = MedicineStock::with('medicine')->latest()->get();
     }
-
     public function promptDelete($id, $name)
     {
         $this->deleteMedicineId = $id;
@@ -226,14 +258,12 @@ class MedicineManagement extends Component
         $this->showDeleteModal = false;
         $this->medicines = Medicine::all();
     }
-
     public function cancelDelete()
     {
         $this->showDeleteModal = false;
         $this->deleteMedicineId = null;
         $this->deleteMedicineName = null;
     }
-
     public function navigateToSales()
     {
         return redirect()->route('sales-management'); // Adjust 'sales.index' to match your route name
@@ -249,9 +279,10 @@ class MedicineManagement extends Component
 
         session()->flash('message', 'Medicine deleted successfully.');
     }
-
     public function render()
     {
-        return view('livewire.medicine-management')->layout('layouts.app');
+        return view('livewire.medicine-management', [
+            'filteredStocks' => $this->getStocksProperty(),
+        ])->layout('layouts.app');
     }
 }

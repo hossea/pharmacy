@@ -9,7 +9,19 @@ export default defineConfig({
         }),
     ],
     build: {
-        outDir: 'public/dist',
-    }
+        outDir: 'public/build',
+        assetsDir: 'assets',
+        manifest: true,
+        rollupOptions: {
+            input: {
+                app: 'resources/js/app.js',
+                appcss: 'resources/css/app.css',
+            },
+        },
+        emptyOutDir: true,
+    },
+    server: {
+        host: '127.0.0.1',
+        port: 5173,
+    },
 });
-

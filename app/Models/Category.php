@@ -22,5 +22,11 @@ class Category extends Model
     {
         return $this->hasMany(Medicine::class);
     }
-
+    /**
+     * Relationship with the Classification model
+     */
+    public function classifications()
+    {
+        return $this->hasMany(Classification::class);
+    }
 }

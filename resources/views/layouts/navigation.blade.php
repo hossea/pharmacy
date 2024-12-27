@@ -17,18 +17,22 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
-                    <!-- Added Links -->
-                    <x-nav-link :href="route('sales-management')" :active="request()->routeIs('sales-management')">
-                        {{ __('Sales Management') }}
+                    <x-nav-link :href="route('categories')" :active="request()->routeIs('categories')">
+                        {{ __('Categories') }}
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('classification-management')" :active="request()->routeIs('classification-management')">
+                        {{ __('Classification') }}
                     </x-nav-link>
 
                     <x-nav-link :href="route('medicine-management')" :active="request()->routeIs('medicine-management')">
                         {{ __('Medicine Management') }}
                     </x-nav-link>
 
-                    <x-nav-link :href="route('categories')" :active="request()->routeIs('categories')">
-                        {{ __('Categories') }}
+                    <x-nav-link :href="route('sales-management')" :active="request()->routeIs('sales-management')">
+                        {{ __('Sales Management') }}
                     </x-nav-link>
+
                 </div>
             </div>
 
@@ -46,7 +50,6 @@
                                 </div>
                             </button>
                         </x-slot>
-
                         <x-slot name="content">
                             <!-- Profile -->
                             <x-dropdown-link :href="route('profile.edit')">
@@ -100,6 +103,10 @@
 
             <x-responsive-nav-link :href="route('categories')" :active="request()->routeIs('categories')">
                 {{ __('Categories') }}
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link :href="route('classification-management')" :active="request()->routeIs('classification-management')">
+                {{ __('Classification') }}
             </x-responsive-nav-link>
         </div>
     </div>

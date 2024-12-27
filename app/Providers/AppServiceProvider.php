@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Providers;
+use Livewire\Livewire;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -19,6 +20,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Livewire::component('classification-management', \App\Livewire\ClassificationManagement::class);
     }
 }

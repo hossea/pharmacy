@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Welcome to Ebenezer Pharmacy System</title>
+        <title>Ebenezer Chemistry </title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -23,20 +23,20 @@
         <div class="relative min-h-screen flex flex-col items-center justify-center bg-cover bg-center" style="background-image: url('/images/pharmacy-background.jpg');">
             <div class="absolute inset-0 bg-black bg-opacity-50"></div>
             <div class="relative z-10 text-center px-6">
-                <h1 class="text-4xl lg:text-6xl font-extrabold text-white mb-4">Welcome to PharmaSys</h1>
-                <p class="text-lg lg:text-xl text-gray-200 mb-6">Your solution for pharmacy and medicine management.</p>
+                <h1 class="text-4xl lg:text-6xl font-extrabold text-white mb-4">Welcome to Ebenezer Chemistry</h1>
+                <p class="text-lg lg:text-xl text-gray-200 mb-6">Your solution for pharmacy and medicine stock management.</p>
 
                 <div class="flex flex-col md:flex-row justify-center gap-4 mb-8">
                     <a href="{{ url('/medicine-management') }}" class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow-md transition">
-                        Explore Medicine Management
+                        Medicine Management
                     </a>
                     <a href="{{ url('/sales-management') }}" class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-md transition">
-                        Explore Sales Management
+                        Sales Management
                     </a>
                 </div>
 
                 <div class="mb-6">
-                    <p class="text-gray-300 mb-3">Let the system take you on a quick tour:</p>
+                    <p class="text-gray-300 mb-3">Let the system help you be more efficient:</p>
                     <button class="px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg shadow-md transition" onclick="startTour()">
                         Take a Tour
                     </button>
